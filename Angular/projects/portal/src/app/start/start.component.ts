@@ -7,6 +7,7 @@ import { ApiService } from '../services/api.service';import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { wish } from '../wish';
 
 @Component({
   selector: 'app-start',
@@ -37,17 +38,35 @@ export class StartComponent implements OnDestroy{
     updateTime: new FormControl(50)
   });
 
+  testResult: string | null = null;
   start(data: any): void {
-    this.subStart = this.apiService.start(data.row,data.column,data.coupling,data.updateTime).subscribe(res =>
-      this.subscription = interval(data.updateTime).subscribe(() => {
-      this.apiService.getFireflies().subscribe(res => {this.fireflies= res;});
-    }));
-    this.running = true;
+    const totalRequests = 1000;
+    let completed = 0;
+    const startTime = performance.now();
+    var wish1: wish = {id: 1, wish: "skateboard", name: "peter", status:1};
+    for(let i=0; i< totalRequests; i++){
+      wish1.id = i;
+      this.apiService.add(wish1).subscribe({
+        next: () => {
+          completed++;
+          if (completed === totalRequests) {
+            const endTime = performance.now();
+            const durationInSeconds = (endTime - startTime) / 1000;
+            this.testResult = `${totalRequests} Requests in ${durationInSeconds.toFixed(
+              2
+            )} Sekunden (${(totalRequests / durationInSeconds).toFixed(
+              2
+            )} Requests/Sekunde)`;
+            console.log(this.testResult);
+          }
+        },
+        error: (err) => console.error('Fehler:', err),
+      });
+    }
   }
 
   stop(): void {
-    this.subStop = this.apiService.stop().subscribe(res => { this.ngOnDestroy();});
-    this.running = false;
+   
   }
 
   

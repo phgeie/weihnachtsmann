@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { wish } from '../wish';
 
-export const BASE_URI: string = 'http://localhost:8080/data';
+export const BASE_URI: string = 'http://localhost:8082/data';
 
 @Injectable({
   providedIn: 'root',
@@ -10,16 +11,8 @@ export const BASE_URI: string = 'http://localhost:8080/data';
 export class ApiService {
   constructor(private httpClient: HttpClient) {}
 
-  start(row: number, column: number, coupling: number, threadSleepTime: number) {
-    return this.httpClient.get(BASE_URI + '/start?row='+row+'&column='+column+'&coupling='+coupling+'&threadSleepTime='+threadSleepTime);
-  }
-
-  stop() {
-    return this.httpClient.get(BASE_URI + '/stop');
-  }
-
-  getFireflies(): Observable<any> {
-    return this.httpClient.get(BASE_URI + '/getFireflies');
+  add(wish1: wish): Observable<any> {
+    return this.httpClient.post<wish>(BASE_URI + '/add', wish1);
   }
 
 }
