@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {Router, RouterLink} from "@angular/router";
-import { interval, Subscription } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import {Router} from "@angular/router";
 import { ApiService } from '../services/api.service';import {
   FormGroup,
   FormControl,
@@ -8,45 +7,61 @@ import { ApiService } from '../services/api.service';import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { wish } from '../wish';
+import { SnowFlakeComponent } from "./snow-flake.component";
+import { SnowFlakeConfig } from './snow';
+
 
 @Component({
   selector: 'app-start',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, SnowFlakeComponent],
   templateUrl: './start.component.html',
   styleUrl: './start.component.scss'
 })
+
+
 export class StartComponent implements OnDestroy{
 
+  public snowflakes: SnowFlakeConfig[];
   constructor(private router: Router,
     private apiService: ApiService
   ) {
+    this.snowflakes = [];
+    for(var i=0; i<150; i++){
+      this.snowflakes.push({
+        depth: this.randRange(1, 5),
+        left: this.randRange(0, 100),
+        speed: this.randRange(1, 5)
+      })
+    }
   }
-// Initialisiere das Array mit der Größe 10
-  private subscription!: Subscription;
-  fireflies: any[][] = [];
+  sub: any[] = [];
+  admin: boolean = false;
+  state: number = 1;
   
-  subStart: any;
-  subStop: any;
-  running: boolean = false;
-  
-  zoomLevel: number = 1;
   data = new FormGroup({
-    coupling: new FormControl(0.5),
-    row: new FormControl(10),
-    column: new FormControl(25),
-    updateTime: new FormControl(50)
+    name: new FormControl(""),
+    wish: new FormControl("")
+  });
+
+  data2 = new FormGroup({
+    id: new FormControl(""),
+    status: new FormControl(1)
+  });
+
+  data3 = new FormGroup({
+    cnt: new FormControl(1)
   });
 
   testResult: string | null = null;
-  start(data: any): void {
-    const totalRequests = 1000;
+  startMultipleUserSimulation(data: any): void {
+    const totalRequests = data.value.cnt;
+    if (totalRequests > 0){
     let completed = 0;
     const startTime = performance.now();
-    var wish1: wish = {id: 1, wish: "skateboard", name: "peter", status:1};
+    var wish1: wish = {wish: "test", name: "trees"};
     for(let i=0; i< totalRequests; i++){
-      wish1.id = i;
-      this.apiService.add(wish1).subscribe({
+      this.sub.push(this.apiService.add(wish1).subscribe({
         next: () => {
           completed++;
           if (completed === totalRequests) {
@@ -54,34 +69,82 @@ export class StartComponent implements OnDestroy{
             const durationInSeconds = (endTime - startTime) / 1000;
             this.testResult = `${totalRequests} Requests in ${durationInSeconds.toFixed(
               2
-            )} Sekunden (${(totalRequests / durationInSeconds).toFixed(
+            )} Sekunden <br>
+             (${(totalRequests / durationInSeconds).toFixed(
               2
             )} Requests/Sekunde)`;
-            console.log(this.testResult);
           }
         },
         error: (err) => console.error('Fehler:', err),
+      }));
+    }
+  }else{
+    this.testResult = "Falsche Eingabe!";
+  }
+  }
+
+  sendWish(data: any): void {
+    var wish1: wish = {wish: data.value.wish, name: data.value.name};
+    this.sub.push(this.apiService.add(wish1).subscribe());
+    this.testResult = "An den Weihnachtsmann gesandt!"
+  }
+
+  getWish(data: any): void{
+    this.testResult = "";
+    this.sub.push(this.apiService.get(data.value.name).subscribe(res =>{
+      res.forEach((element: { wish: string; status: number; id: string }) => {
+        this.testResult += "ID: " + element.id + "<br>" + "Wunsch: " + element.wish + ", Status: ";
+        if(element.status == 1){
+          this.testResult += "Formuliert <br><br>"
+        }else if(element.status == 2){
+          this.testResult += "In Bearbeitung <br><br>"
+        }else if(element.status == 3){
+          this.testResult += "In Auslieferung <br><br>"
+        }else if(element.status == 4){
+          this.testResult += "Unterm Weihnachtsbaum <br><br>"
+        }
       });
+    }));
+  }
+
+  editStatus(data: any): void{
+    if (data.value.status < 1 || data.value.status > 4){
+      this.testResult = "Status nicht erkannt!";
+    }else{
+      this.sub.push(this.apiService.setStatus(data.value.id, data.value.status).subscribe(res=>{
+        this.testResult = "Status wurde zu ";
+        if(data.value.status == 1){
+          this.testResult += "'Formuliert' geändert!"
+        }else if(data.value.status == 2){
+          this.testResult += "'In Bearbeitung' geändert!"
+        }else if(data.value.status == 3){
+          this.testResult += "'In Auslieferung' geändert!"
+        }else if(data.value.status == 4){
+          this.testResult += "'Unterm Weihnachtsbaum' geändert!"
+        }
+      }));
     }
   }
 
-  stop(): void {
-   
+  ngOnDestroy(){
+    this.sub.forEach(element => {
+      element.unsubscribe();
+    });
   }
 
-  
-  zoomIn() {
-    this.zoomLevel = Math.min(this.zoomLevel + 0.1, 3); // Maximal 300%
+  private randRange( min: number, max: number ) : number {
+
+		var range = ( max - min );
+
+		return( min + Math.round( Math.random() * range ) );
+
+
+	}
+
+  setState(state: number){
+    this.state = state;
+    this.testResult = "";
   }
 
-  zoomOut() {
-    this.zoomLevel = Math.max(this.zoomLevel - 0.1, 0.1); // Minimal 10%
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-    this.subStart.unsubscribe();
-    this.subStop.unsubscribe();
-  }
 
 }

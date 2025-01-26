@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 public class XmasWish {
     @Id
-    private Integer id;
+    private String id;
 
     private String wish;
 

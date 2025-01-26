@@ -1,99 +1,133 @@
-<div>
-  <div class="collapse collapse-open bg-blue-200 border shadow-xl data">
-  <form [formGroup]="data" (ngSubmit)="start(data.value)">
-    
-    
-    <div class="columns-1 md:columns-6 gap-2 bg-blue-200 p-4">
-        <button type="button" class="btn btn-md bg-gray-500 text-white float-left zoom-out" (click)="zoomOut()">-</button>
-        <button type="button" class="btn btn-md bg-gray-500 text-white float-left zoom-in" (click)="zoomIn()">+</button>
-      
-      <label class="form-control w-full max-w-xs">
-        <div class="label">
-          <span class="label-text">coupling</span>
+<div class="relative min-h-screen bg-gradient-to-b from-green-200 to-red-200 flex items-center justify-center">
+  <!-- Snowflake animation and background image -->
+  <div class="relative w-full h-full">
+    <div class="snowflakes-container absolute inset-0">
+      @for (config of snowflakes; track $index){
+      <snow-flake [depth]="config.depth" [speed]="config.speed" [style.left.vw]="config.left"></snow-flake>
+      }
+    </div>
+
+    <div class="image-container">
+      <img src="assets/img/mounthouse.jpg">
+    </div>
+  </div>
+
+  <div class="card w-100 bg-white shadow-2xl p-6 rounded-xl z-10 absolute m-auto">
+    <div role="tablist" class="tabs tabs-lifted">
+      <input type="radio" name="my_tabs_1" role="tab" class="tab" aria-label="Wunsch erstellen" [checked]="state==1"
+        (click)="setState(1)" />
+      <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+        <h1 class="text-center text-2xl font-bold text-green-800 mb-4">🎄 Weihnachtswunsch 🎁</h1>
+        <p class="text-center text-gray-600 mb-6">Gib deinen Namen und Wunsch ein und sende ihn an den Weihnachtsmann!
+        </p>
+
+        <form [formGroup]="data" (ngSubmit)="sendWish(data)" class="space-y-4">
+          <div>
+            <label class="label">
+              <span class="label-text text-gray-700">Dein Name</span>
+            </label>
+            <input type="text" name="name" class="input input-bordered w-full" placeholder="Name" required
+              formControlName="name" />
+          </div>
+
+          <div>
+            <label class="label">
+              <span class="label-text text-gray-700">Dein Wunsch</span>
+            </label>
+            <input type="text" name="wish" class="input input-bordered w-full" placeholder="Wunsch" required
+              formControlName="wish" />
+          </div>
+
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary w-full" [disabled]="!data.valid">Senden</button>
+          </div>
+        </form>
+        
+        @if(testResult){
+        <div class="mt-4 p-4 bg-green-100 text-green-800 rounded-lg">
+          <div class="mt-4 p-4 bg-green-100 text-green-800 rounded-lg">
+            <label [innerHTML]="testResult"></label>
+          </div>
         </div>
-        <input
-          type="number"
-          class="input input-bordered w-full max-w-xs"
-          formControlName="coupling"
-          [readonly]="running"
-          min="0"
-          max="1"
-          step="0.01"
-        />
-      </label>
-        <label class="form-control w-full max-w-xs">
-          <div class="label">
-            <span class="label-text">row</span>
-          </div>
-          <input
-            type="number"
-            class="input input-bordered w-full max-w-xs"
-            formControlName="row"
-            [readonly]="running"
-            min="1"
-          />
-        </label>
-        <label class="form-control w-full max-w-xs">
-          <div class="label">
-            <span class="label-text">column</span>
-          </div>
-          <input
-            type="number"
-            class="input input-bordered w-full max-w-xs"
-            formControlName="column"
-            [readonly]="running"
-            min="1"
-          />
-        </label>
-          <label class="form-control w-full max-w-xs">
-            <div class="label">
-              <span class="label-text">Updatetime (ms)</span>
-            </div>
-            <input
-              type="number"
-              class="input input-bordered w-full max-w-xs"
-              formControlName="updateTime"
-              [readonly]="running"
-              min="1"
-            />
-          </label>
-          
-<button
-      class="btn btn-md bg-gray-500 text-white float-right"
-      [disabled]="running"
-    >
-      start
-    </button>
-    <button
-class="btn btn-md bg-gray-500 text-white float-right"
-type="button"
-(click)="stop()"
-[disabled]="!running"
->
-stop
-</button>
-    </div>
-  </form>
-  </div>
-  </div>
-  <div class="collapse collapse-open bg-blue-200 border shadow-xl data">
-    <div class="grid-container"
-    [style.gridTemplateColumns]="'repeat(' + data.value.column + ', 1fr)'"
-    [style.gridTemplateRows]="'repeat(' + data.value.row + ', 1fr)'"
-    [style.transform]="'scale(' + zoomLevel + ')'">
-      @for (flies of fireflies; track $index) {
-        @for (opt of flies; track $index) {
-      <div class="grid-item">
-        @if (opt > 3.14){
-          <img src="assets/img/firefly_light.svg" class="scaled-image">
-          
-        }@else {
-          <img src="assets/img/firefly_dark.svg" class="scaled-image">
-          
         }
-          
       </div>
-    }
-    }
+      <input type="radio" name="my_tabs_1" role="tab" class="tab" aria-label="Wunsch finden" [checked]="state==2"
+        (click)="setState(2)" />
+      <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+        <h1 class="text-center text-2xl font-bold text-green-800 mb-4">🎄 Weihnachtswunsch 🎁</h1>
+        <p class="text-center text-gray-600 mb-6">Gib deinen Namen ein und suche dein eingetragenes Geschenk mit seinem aktuellen Status!
+        </p>
+
+        <form [formGroup]="data" (ngSubmit)="getWish(data)" class="space-y-4">
+          <div>
+            <label class="label">
+              <span class="label-text text-gray-700">Dein Name</span>
+            </label>
+            <input type="text" name="name" class="input input-bordered w-full" placeholder="Name" required
+              formControlName="name" />
+          </div>
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary w-full">Suchen</button>
+          </div>
+        </form>
+        
+        @if(testResult){
+        <div class="mt-4 p-4 bg-green-100 text-green-800 rounded-lg">
+          <label [innerHTML]="testResult"></label>
+        </div>
+        }
+      </div>
+      <input type="radio" name="my_tabs_1" role="tab" class="tab" aria-label="Admin" [checked]="state==3"
+        (click)="setState(3)" />
+      <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
+
+        <h1 class="text-center text-2xl font-bold text-green-800 mb-4"> Admin </h1>
+        <p class="text-center text-gray-600 mb-6">Ändere den Status einer Bestellung oder führe einen Stresstest aus!
+        </p>
+
+        <form [formGroup]="data2" (ngSubmit)="editStatus(data2)" class="space-y-4">
+          <div>
+            <label class="label">
+              <span class="label-text text-gray-700">ID</span>
+            </label>
+            <input type="text" name="id" class="input input-bordered w-full" placeholder="ID" required
+              formControlName="id" />
+          </div>
+          <div>
+            <label class="label">
+              <span class="label-text text-gray-700">Status</span>
+            </label>
+            <input type="number" name="status" class="input input-bordered w-full" placeholder="1" required
+              formControlName="status" />
+          </div>
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary w-full">Ändern</button>
+          </div>
+        </form>
+        <form [formGroup]="data3" (ngSubmit)="startMultipleUserSimulation(data3)" class="space-y-4">
+          <div>
+            <label class="label">
+              <span class="label-text text-gray-700">Anzahl Anfragen</span>
+            </label>
+            <input type="number" name="cnt" class="input input-bordered w-full" placeholder="1" required
+              formControlName="cnt" />
+          </div>
+          <div class="mt-4">
+            <button type="submit"
+              class="btn btn-primary w-full">Stresstest</button>
+          </div>
+        </form>
+        
+        @if(testResult){
+        <div class="mt-4 p-4 bg-green-100 text-green-800 rounded-lg">
+          <div class="mt-4 p-4 bg-green-100 text-green-800 rounded-lg">
+            <label [innerHTML]="testResult"></label>
+          </div>
+        </div>
+        }
+      </div>
     </div>
   </div>
+</div>

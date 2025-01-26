@@ -1,28 +1,19 @@
-.scaled-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.grid-container {
-  display: grid;
-  gap: 0px; /* Abstand zwischen den Elementen */
-}
-
-.grid-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-
 button {
   margin: 5px;
   background-color: darkblue;
+  color: white;
+}
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.data {
-  margin-top: 2%;
-  margin-left: 2%;
-  width: 96%;
+.image-container img {
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
 }

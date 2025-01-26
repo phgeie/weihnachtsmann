@@ -11,12 +11,12 @@ public class FileToApiRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         // Konfiguration des Dateiscanners
-        from("file:D:/Github/test/fst/weihnachtsmann/Spring-Boot-Server/testdata")
+        from("file:wunschzettel")
                 .log("Neue Datei erkannt")
                 .unmarshal().json(XmasWish.class)
                 .marshal().json(JsonLibrary.Jackson)// Unmarshal JSON
                 .setHeader("Content-Type", constant("application/json"))
-                .to("http://localhost:8082/data/add") // URL Ihres XmasWishes-Systems
+                .to("http://localhost:8080/data/add") // URL Ihres XmasWishes-Systems
                 .log("Datei erfolgreich an XmasWishes-System gesendet.");
     }
 }
