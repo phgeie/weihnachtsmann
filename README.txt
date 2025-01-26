@@ -4,10 +4,11 @@ Benötigt:
 	- nodejs
 
 Ausführung: 
-	- Führen Sie das Build-Skript firefly.sh mit git bash aus
+	- Führen Sie das Build-Skript xmaswishes.sh mit git bash aus
 	- Öffnen Sie ein Browser-Fenster mit http://localhost:4200/start
-	- Stellen Sie Werte für die Glühwürmchen ein
-	- Drücken Sie auf "start" (Bei "start" sind alle Eingaben außer "stop" disabled)
-	- Mit "stop" werden die Hintergrund Berechnungen beendet
+	- Nutzen sie die drei Seiten Wunsch erstellen, Wunsch finden und Admin
 
-	- Falls angular nach autocomplition fragt, n drücken
+	- Für Apache Camel: Datei im Json-Format der Form: {"name":"testname", "wish":"testwish"} in das Verzeichnis wunschzettel im Spring-Boot-Server legen.
+
+Zusatz:
+	- Die nginx.conf macht nichts. Sie dient nur als Beispiel wie ein Teil des Load Balancing ausgeführt werden könnte.
