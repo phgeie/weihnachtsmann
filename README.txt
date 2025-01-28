@@ -2,6 +2,7 @@ Benötigt:
 	- git bash
 	- maven
 	- nodejs
+	- mongodb
 
 Ausführung: 
 	- Führen Sie das Build-Skript xmaswishes.sh mit git bash aus
